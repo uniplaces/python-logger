@@ -1,13 +1,12 @@
 #!/usr/bin/python3
 
-import time
-import datetime
+import strict_rfc3339
 import os
 import sys
 import json
+import logging
 
 from logbook import Logger, StreamHandler
-
 
 CRITICAL = "CRITICAL"
 ERROR = "ERROR"
@@ -60,7 +59,7 @@ class UniLogger:
             "message": record.message,
             "app-id": os.environ.get('APPID'),
             "git-hash": os.environ.get('GITHASH'),
-            "time": datetime.datetime.now().time().strftime('%H:%M:%S.%f'),
+            "time": strict_rfc3339.now_to_rfc3339_utcoffset(integer=True),
             "env": os.environ.get('ENV'),
             "level_name": self.messageLevel,
             "level": LOG_LEVELS[self.messageLevel]
@@ -68,13 +67,13 @@ class UniLogger:
 
         return json.dumps({**defaultMessage, **self.context})
 
-    def addContextField(self, key, value):
+    def add_context_field(self, key, value):
         """ Add a context field. """
         self.context.update({key: value})
 
         return self
 
-    def addContextFields(self, newFields):
+    def add_context_fields(self, newFields):
         """ Add several fields. """
         self.context.update(newFields)
 
